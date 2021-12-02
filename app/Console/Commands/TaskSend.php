@@ -6,6 +6,7 @@ use App\Models\TaskRpc;
 use App\Models\Transaction;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 
 class TaskSend extends Command
 {
@@ -28,18 +29,31 @@ class TaskSend extends Command
     {
         $this->info('Start send');
 
+        if (Storage::disk('local')->exists(env('PRIVATE_FILENAME')) === false) {
+            return;
+        }
+
+        $privateKey = openssl_pkey_get_private(Storage::disk('local')->get(env('PRIVATE_FILENAME')));
+
         $taskRpcs = TaskRpc::where('send', TaskRpc::STATUS_NOT_SEND)
             ->get();
 
-        $this->info(sprintf('%s: $s', 'All transaction: ', count($taskRpcs)));
+        $this->info(sprintf('%s: %s', 'All transaction: ', count($taskRpcs)));
         foreach ($taskRpcs as $taskRpc) {
+
+            $getSignature = openssl_sign($taskRpc->request, $signature, $privateKey, OPENSSL_ALGO_SHA256);
+            if ($getSignature == false) {
+                continue;
+            }
 
             $decode = json_decode($taskRpc->request);
             if ($decode === null) {
                 continue;
             }
 
-            $response = Http::post($taskRpc->url, (array) $decode);
+            $response = Http::withBody($signature, 'application/text')
+                ->get($taskRpc->url, (array) $decode);
+
             $taskRpc->response = $response->body();
 
             if ($response->status() !== TaskRpc::STATUS_SEND_OK) {
