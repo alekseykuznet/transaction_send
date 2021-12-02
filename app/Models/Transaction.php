@@ -48,10 +48,17 @@ class Transaction extends Model
         return with(new static)->getTable();
     }
 
+    function random_float($min, $max) {
+        return random_int($min, $max - 1) + (random_int(0, PHP_INT_MAX - 1) / PHP_INT_MAX );
+    }
+
     public static function generateTransaction()
     {
         $orderNumber = self::getLastNumber();
-        $commisionPercent = rand(0.5, 2);
+        $commisionPercent = random_int(0.5, 2) + (random_int(0, PHP_INT_MAX - 1) / PHP_INT_MAX );
+        $commisionPercent = round($commisionPercent, 2);
+
+        $randomFloat = rand(0, 10) / 10;
 
         $transaction = new Transaction();
 
