@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Storage;
  * @package App\Models
  * @property int $id
  * @property string $url
- * @property string $sign
  * @property string $request
  * @property string $response
  * @property int $attemp_count
@@ -31,7 +30,6 @@ class TaskRpc extends Model
     ];
 
     protected $fillable = [
-        'sign',
         'url',
         'request',
         'response',

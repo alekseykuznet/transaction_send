@@ -107,7 +107,6 @@ class Transaction extends Model
 
         $taskSend->url = env('SERVICE_SEND_URL');
         $taskSend->request = json_encode($data);
-        $taskSend->sign = '1';
 
         return $taskSend->save();
     }

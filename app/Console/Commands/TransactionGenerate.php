@@ -30,6 +30,7 @@ class TransactionGenerate extends Command
 
         for ($i = 0; $i < $transactionCount; $i++) {
             $transaction = Transaction::generateTransaction();
+
             if ($transaction === null) {
                 continue;
             }

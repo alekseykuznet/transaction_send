@@ -40,6 +40,8 @@ class KeyGenerate extends Command
         Storage::disk('local')->put(env('PRIVATE_FILENAME'), $privateKey);
         Storage::disk('local')->put(env('PUBLIC_FILENAME'), $publicKey);
 
+
+
         $this->info('End');
     }
 }

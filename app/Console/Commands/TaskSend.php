@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Classes\Settings;
 use App\Models\TaskRpc;
 use App\Models\Transaction;
 use Illuminate\Console\Command;
@@ -29,11 +30,12 @@ class TaskSend extends Command
     {
         $this->info('Start send');
 
-        if (Storage::disk('local')->exists(env('PRIVATE_FILENAME')) === false) {
+        $privateKey = Settings::get();
+        if ($privateKey === '') {
             return;
         }
 
-        $privateKey = openssl_pkey_get_private(Storage::disk('local')->get(env('PRIVATE_FILENAME')));
+        $privateKey = openssl_pkey_get_private($privateKey);
 
         $taskRpcs = TaskRpc::where('send', TaskRpc::STATUS_NOT_SEND)
             ->get();
